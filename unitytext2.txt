@@ -1,0 +1,28 @@
+ void OnMouseDown()
+    {
+        // 1
+        //게임에서 타일 선택을 허용하는지 확인하십시오. 게임이 종료되거나 타일이 비어 있는 경우와 같이 플레이어가 타일을 선택할 수 없도록 하고 싶은 경우가 있을 수 있습니다.
+        if (render.sprite == null || BoardManager.instance.IsShifting)
+        {
+            return;
+        }
+
+        if (isSelected)
+        { // 2 Is it already selected?
+            //if(isSelected)는 타일을 선택할지 또는 선택 취소할지를 결정합니다. 이미 선택되어 있으면 선택을 취소하십시오.
+            Deselect();
+        }
+        else
+        {
+            if (previousSelected == null)
+            { // 3 Is it the first tile selected?
+                //이미 다른 타일이 선택되어 있는지 확인합니다. previousSelected가 null일 때 첫 번째이므로 선택합니다.
+                Select();
+            }
+            else
+            {
+                previousSelected.Deselect(); // 4
+                //처음 선택한 타일이 아닌 경우 모든 타일을 선택 취소합니다.
+            }
+        }
+    }

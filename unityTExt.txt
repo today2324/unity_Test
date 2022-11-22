@@ -1,0 +1,50 @@
+using System.Collections;
+using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEngine;
+
+public class BoardManager : MonoBehaviour
+{
+    public static BoardManager instance;     // 1
+    //다른 스크립트는 BoardManager.cs에 액세스해야 하므로 스크립트는 instance라는 정적 변수와 함께 Singleton 패턴을 사용하므로 모든 스크립트에서 호출할 수 있습니다.
+    public List<Sprite> characters = new List<Sprite>();     // 2
+    //캐릭터는 타일 조각으로 사용할 스프라이트 목록입니다.
+    public GameObject tile;      // 3
+    //게임 개체 조립식 타일은 보드를 만들 때 인스턴스화된 조립식입니다.
+    public int xSize, ySize;     // 4
+    //xSize 및 ySize는 보드의 X 및 Y 치수입니다.
+
+    private GameObject[,] tiles;      // 5
+    //또한 보드에 타일을 저장하는 데 사용되는 Tiles라는 2D 배열이 있습니다.
+    public bool IsShifting { get; set; }     // 6
+    //캡슐화된 bool IsShifting도 제공됩니다. 이것은 일치하는 항목이 발견되고 보드가 다시 채워지면 게임에 알려줍니다.
+    void Start()
+    {
+        instance = GetComponent<BoardManager>();     // 7
+        //Start() 메서드는 BoardManager를 참조하여 싱글톤을 설정합니다.
+        Vector2 offset = tile.GetComponent<SpriteRenderer>().bounds.size;
+        CreateBoard(offset.x, offset.y);     // 8 
+        //타일 스프라이트 크기의 경계를 전달하여 CreateBoard()를 호출합니다.
+    }
+    private void CreateBoard(float xOffset, float yOffset)
+    {
+        tiles = new GameObject[xSize, ySize];     // 9
+        //CreateBoard()에서 2D 배열 타일이 초기화됩니다.
+        float startX = transform.position.x;     // 10r
+        //보드 생성을 위한 시작 위치를 찾으십시오.
+        float startY = transform.position.y;
+            
+        for (int x = 0; x < xSize; x++)
+        {      // 11
+            for (int y = 0; y < ySize; y++)
+            {
+                GameObject newTile = Instantiate(tile, new Vector3(startX + (xOffset * x), startY + (yOffset * y), 0), tile.transform.rotation);
+                tiles[x, y] = newTile;
+                newTile.transform.parent = transform; // 1
+                Sprite newSprite = characters[Random.Range(0, characters.Count)]; // 2
+                newTile.GetComponent<SpriteRenderer>().sprite = newSprite; // 3
+            }
+        }
+    }
+
+}
